@@ -1,1 +1,5 @@
-package gm
+package main
+
+func main() {
+
+}
