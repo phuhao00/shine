@@ -6,8 +6,8 @@ import (
 	"github.com/phuhao00/shine/pkg/gate"
 	network2 "github.com/phuhao00/shine/pkg/network"
 	"github.com/phuhao00/shine/pkg/network/protobuf"
-	"github.com/phuhao00/shine/servers/module/family"
-	player2 "github.com/phuhao00/shine/servers/module/player"
+	"github.com/phuhao00/shine/servers/game/module/family"
+	"github.com/phuhao00/shine/servers/game/module/player"
 	"sync"
 )
 
@@ -15,7 +15,7 @@ import (
 
 type World struct {
 	family         *family.Family
-	manager        *player2.PlayerManager
+	manager        *player.PlayerManager
 	clients        []*network2.TCPClient
 	mutex          sync.Mutex
 	SeverForClient *gate.Gate          // Server for client
@@ -27,7 +27,7 @@ type World struct {
 func NewWorld() *World {
 	return &World{
 		family:    family.NewFamily(),
-		manager:   player2.NewManager(),
+		manager:   player.NewManager(),
 		processor: protobuf.NewProcessor(),
 	}
 }
@@ -50,7 +50,7 @@ func (w *World) Run() {
 	// Create server for gm
 	// Create server for rank
 	// Create server for client
-	w.SeverForClient = w.NewServer(player2.NewPlayerWithConn)
+	w.SeverForClient = w.NewServer(player.NewPlayerWithConn)
 
 	gmCloseSig := make(chan bool)
 	rankCloseSig := make(chan bool)

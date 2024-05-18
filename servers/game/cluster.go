@@ -1,4 +1,4 @@
-package cluster
+package game
 
 import (
 	network2 "github.com/phuhao00/shine/pkg/network"

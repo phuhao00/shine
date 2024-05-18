@@ -2,8 +2,8 @@ package shine
 
 import (
 	"github.com/phuhao00/shine/pkg/log"
-	"github.com/phuhao00/shine/servers/cluster"
-	"github.com/phuhao00/shine/servers/module"
+	"github.com/phuhao00/shine/servers/game"
+	"github.com/phuhao00/shine/servers/game/module"
 	"os"
 	"os/signal"
 
@@ -30,13 +30,13 @@ func Run(mods ...module.Module) {
 	module.Init()
 
 	// cluster
-	cluster.Init()
+	game.Init()
 
 	// close
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
 	sig := <-c
 	log.Release("Leaf closing down (signal: %v)", sig)
-	cluster.Destroy()
+	game.Destroy()
 	module.Destroy()
 }
