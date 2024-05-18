@@ -1,11 +1,11 @@
 package module
 
 import (
+	"github.com/phuhao00/shine/pkg/log"
 	"runtime"
 	"sync"
 
 	"github.com/phuhao00/shine/conf"
-	"github.com/phuhao00/shine/log"
 )
 
 type Module interface {

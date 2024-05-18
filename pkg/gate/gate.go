@@ -1,12 +1,12 @@
 package gate
 
 import (
+	"github.com/phuhao00/shine/pkg/chanrpc"
+	"github.com/phuhao00/shine/pkg/log"
+	network2 "github.com/phuhao00/shine/pkg/network"
 	"net"
 	"reflect"
 
-	"github.com/phuhao00/shine/chanrpc"
-	"github.com/phuhao00/shine/log"
-	"github.com/phuhao00/shine/network"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -14,7 +14,7 @@ type Gate struct {
 	MaxConnNum      int
 	PendingWriteNum int
 	MaxMsgLen       uint32
-	Processor       network.Processor
+	Processor       network2.Processor
 	AgentChanRPC    *chanrpc.Server
 
 	// websocket
@@ -27,14 +27,14 @@ type Gate struct {
 	LenMsgLen    int
 	LittleEndian bool
 	//
-	NewAgent func(*network.TCPConn) network.Agent
+	NewAgent func(*network2.TCPConn) network2.Agent
 }
 
 func (gate *Gate) Run(closeSig chan bool) {
 
-	var tcpServer *network.TCPServer
+	var tcpServer *network2.TCPServer
 	if gate.TCPAddr != "" {
-		tcpServer = new(network.TCPServer)
+		tcpServer = new(network2.TCPServer)
 		tcpServer.Addr = gate.TCPAddr
 		tcpServer.MaxConnNum = gate.MaxConnNum
 		tcpServer.PendingWriteNum = gate.PendingWriteNum
@@ -55,7 +55,7 @@ func (gate *Gate) Run(closeSig chan bool) {
 func (gate *Gate) OnDestroy() {}
 
 type agent struct {
-	conn     network.Conn
+	conn     network2.Conn
 	gate     *Gate
 	userData interface{}
 }
@@ -92,9 +92,9 @@ func (a *agent) OnClose() {
 	}
 }
 
-func (a *agent) WriteMsg(msg proto.Message) {
+func (a *agent) WriteMsg(msgId uint16, msg proto.Message) {
 	if a.gate.Processor != nil {
-		data, err := a.gate.Processor.Marshal(msg)
+		data, err := a.gate.Processor.Marshal(msgId, msg)
 		if err != nil {
 			log.Error("marshal message %v error: %v", reflect.TypeOf(msg), err)
 			return

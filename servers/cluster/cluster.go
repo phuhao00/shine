@@ -1,21 +1,21 @@
 package cluster
 
 import (
+	network2 "github.com/phuhao00/shine/pkg/network"
 	"math"
 	"time"
 
 	"github.com/phuhao00/shine/conf"
-	"github.com/phuhao00/shine/network"
 )
 
 var (
-	server  *network.TCPServer
-	clients []*network.TCPClient
+	server  *network2.TCPServer
+	clients []*network2.TCPClient
 )
 
 func Init() {
 	if conf.ListenAddr != "" {
-		server = new(network.TCPServer)
+		server = new(network2.TCPServer)
 		server.Addr = conf.ListenAddr
 		server.MaxConnNum = int(math.MaxInt32)
 		server.PendingWriteNum = conf.PendingWriteNum
@@ -27,7 +27,7 @@ func Init() {
 	}
 
 	for _, addr := range conf.ConnAddrs {
-		client := new(network.TCPClient)
+		client := new(network2.TCPClient)
 		client.Addr = addr
 		client.ConnNum = 1
 		client.ConnectInterval = 3 * time.Second
@@ -52,10 +52,10 @@ func Destroy() {
 }
 
 type Agent struct {
-	conn *network.TCPConn
+	conn *network2.TCPConn
 }
 
-func newAgent(conn *network.TCPConn) network.Agent {
+func newAgent(conn *network2.TCPConn) network2.Agent {
 	a := new(Agent)
 	a.conn = conn
 	return a

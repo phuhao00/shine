@@ -1,13 +1,13 @@
 package shine
 
 import (
+	"github.com/phuhao00/shine/pkg/log"
+	"github.com/phuhao00/shine/servers/cluster"
+	"github.com/phuhao00/shine/servers/module"
 	"os"
 	"os/signal"
 
-	"github.com/phuhao00/shine/cluster"
 	"github.com/phuhao00/shine/conf"
-	"github.com/phuhao00/shine/log"
-	"github.com/phuhao00/shine/module"
 )
 
 func Run(mods ...module.Module) {

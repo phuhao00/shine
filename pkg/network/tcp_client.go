@@ -1,11 +1,10 @@
 package network
 
 import (
+	"github.com/phuhao00/shine/pkg/log"
 	"net"
 	"sync"
 	"time"
-
-	"github.com/phuhao00/shine/log"
 )
 
 type TCPClient struct {

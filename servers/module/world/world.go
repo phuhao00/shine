@@ -3,21 +3,20 @@ package world
 // World is the top-level interface of the game server.
 
 import (
+	"github.com/phuhao00/shine/pkg/gate"
+	network2 "github.com/phuhao00/shine/pkg/network"
+	"github.com/phuhao00/shine/pkg/network/protobuf"
+	"github.com/phuhao00/shine/servers/module/family"
+	player2 "github.com/phuhao00/shine/servers/module/player"
 	"sync"
-
-	"github.com/phuhao00/shine/gate"
-	"github.com/phuhao00/shine/module/family"
-	"github.com/phuhao00/shine/module/player"
-	"github.com/phuhao00/shine/network"
-	"github.com/phuhao00/shine/network/protobuf"
 )
 
 // World is the top-level interface of the game server.
 
 type World struct {
 	family         *family.Family
-	manager        *player.PlayerManager
-	clients        []*network.TCPClient
+	manager        *player2.PlayerManager
+	clients        []*network2.TCPClient
 	mutex          sync.Mutex
 	SeverForClient *gate.Gate          // Server for client
 	ServerForRank  *gate.Gate          // Server for rank
@@ -28,12 +27,12 @@ type World struct {
 func NewWorld() *World {
 	return &World{
 		family:    family.NewFamily(),
-		manager:   player.NewManager(),
+		manager:   player2.NewManager(),
 		processor: protobuf.NewProcessor(),
 	}
 }
 
-func (w *World) NewServer(newAgent func(*network.TCPConn) network.Agent) *gate.Gate {
+func (w *World) NewServer(newAgent func(*network2.TCPConn) network2.Agent) *gate.Gate {
 	return &gate.Gate{
 		MaxConnNum:      10000,
 		PendingWriteNum: 1000,
@@ -51,7 +50,7 @@ func (w *World) Run() {
 	// Create server for gm
 	// Create server for rank
 	// Create server for client
-	w.SeverForClient = w.NewServer(player.NewPlayerWithConn)
+	w.SeverForClient = w.NewServer(player2.NewPlayerWithConn)
 
 	gmCloseSig := make(chan bool)
 	rankCloseSig := make(chan bool)
@@ -76,7 +75,7 @@ func (w *World) SetServerForClient(server *gate.Gate) {
 }
 
 // AddClient adds a new TCPClient to the World.
-func (w *World) AddClient(client *network.TCPClient) {
+func (w *World) AddClient(client *network2.TCPClient) {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
 
@@ -84,7 +83,7 @@ func (w *World) AddClient(client *network.TCPClient) {
 }
 
 // RemoveClient removes a TCPClient from the World.
-func (w *World) RemoveClient(client *network.TCPClient) {
+func (w *World) RemoveClient(client *network2.TCPClient) {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
 

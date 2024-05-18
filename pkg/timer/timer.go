@@ -1,11 +1,11 @@
 package timer
 
 import (
+	"github.com/phuhao00/shine/pkg/log"
 	"runtime"
 	"time"
 
 	"github.com/phuhao00/shine/conf"
-	"github.com/phuhao00/shine/log"
 )
 
 // one dispatcher per goroutine (goroutine not safe)

@@ -4,17 +4,15 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/phuhao00/shine/pkg/chanrpc"
+	"github.com/phuhao00/shine/pkg/log"
 	"math"
 	"reflect"
 
-	"github.com/phuhao00/shine/chanrpc"
-	"github.com/phuhao00/shine/log"
 	"google.golang.org/protobuf/proto"
 )
 
-// -------------------------
-// msgLen | id | protobuf message |
-// -------------------------
+// Processor msgLen | id | protobuf message |
 type Processor struct {
 	littleEndian bool
 	msgInfo      map[uint16]*MsgInfo
@@ -39,12 +37,12 @@ func NewProcessor() *Processor {
 	return p
 }
 
-// It's dangerous to call the method on routing or marshaling (unmarshaling)
+// SetByteOrder It's dangerous to call the method on routing or marshalin
 func (p *Processor) SetByteOrder(littleEndian bool) {
 	p.littleEndian = littleEndian
 }
 
-// It's dangerous to call the method on routing or marshaling (unmarshaling)
+// Register It's dangerous to call the method on routing or marshaling
 func (p *Processor) Register(msgId uint16, msg proto.Message) uint16 {
 	msgType := reflect.TypeOf(msg)
 	if msgType == nil || msgType.Kind() != reflect.Ptr {
@@ -61,17 +59,17 @@ func (p *Processor) Register(msgId uint16, msg proto.Message) uint16 {
 	return id
 }
 
-// It's dangerous to call the method on routing or marshaling (unmarshaling)
+// SetRouter It's dangerous to call the method on routing or marshaling
 func (p *Processor) SetRouter(msgId uint16, msgRouter *chanrpc.Server) {
 	p.msgInfo[msgId].msgRouter = msgRouter
 }
 
-// It's dangerous to call the method on routing or marshaling (unmarshaling)
+// SetHandler It's dangerous to call the method on routing or marshaling
 func (p *Processor) SetHandler(msgId uint16, msgHandler MsgHandler) {
 	p.msgInfo[msgId].msgHandler = msgHandler
 }
 
-// goroutine safe
+// Route goroutine safe
 func (p *Processor) Route(msgId uint16, data []byte) error {
 
 	i := p.msgInfo[msgId]
@@ -84,7 +82,7 @@ func (p *Processor) Route(msgId uint16, data []byte) error {
 	return nil
 }
 
-// goroutine safe
+// Unmarshal goroutine safe
 func (p *Processor) Unmarshal(data []byte) (proto.Message, error) {
 	if len(data) < 2 {
 		return nil, errors.New("protobuf data too short")
@@ -108,7 +106,7 @@ func (p *Processor) Unmarshal(data []byte) (proto.Message, error) {
 
 }
 
-// goroutine safe
+// GetMsgID goroutine safe
 func (p *Processor) GetMsgID(data []byte) (uint16, error) {
 	if len(data) < 2 {
 		return 0, errors.New("protobuf data too short")
@@ -116,7 +114,7 @@ func (p *Processor) GetMsgID(data []byte) (uint16, error) {
 	return binary.BigEndian.Uint16(data[:2]), nil
 }
 
-// goroutine safe
+// Marshal goroutine safe
 func (p *Processor) Marshal(msgId uint16, msg proto.Message) ([]byte, error) {
 	id := make([]byte, 8)
 	if p.littleEndian {
@@ -132,7 +130,7 @@ func (p *Processor) Marshal(msgId uint16, msg proto.Message) ([]byte, error) {
 	return ret, err
 }
 
-// goroutine safe
+// Range goroutine safe
 func (p *Processor) Range(f func(id uint16, t reflect.Type)) {
 	for id, i := range p.msgInfo {
 		f(uint16(id), i.msgType)

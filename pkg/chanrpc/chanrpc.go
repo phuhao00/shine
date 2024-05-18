@@ -1,6 +1,7 @@
 package chanrpc
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"runtime"
@@ -52,7 +53,7 @@ func assert(i interface{}) []interface{} {
 	}
 }
 
-// you must call the function before calling Open and Go
+// Register you must call the function before calling Open and Go
 func (s *Server) Register(id uint16, f func(data []byte) error) {
 	if _, ok := s.functions[id]; ok {
 		panic(fmt.Sprintf("function id %v: already registered", id))
@@ -97,11 +98,11 @@ func (s *Server) exec(ci *CallInfo) (err error) {
 func (s *Server) Exec(ci *CallInfo) {
 	err := s.exec(ci)
 	if err != nil {
-		log.Error("%v", err)
+		log.Error(context.Background(), "%v", err)
 	}
 }
 
-// goroutine safe
+// Go goroutine safe
 func (s *Server) Go(id uint16, args []byte) {
 	f := s.functions[id]
 	if f == nil {
@@ -118,7 +119,7 @@ func (s *Server) Go(id uint16, args []byte) {
 	}
 }
 
-// goroutine safe
+// Call goroutine safe
 func (s *Server) Call(id uint16, args []byte) error {
 	return s.Open(0).Call(id, args)
 }
@@ -133,7 +134,7 @@ func (s *Server) Close() {
 	}
 }
 
-// goroutine safe
+// Open goroutine safe
 func (s *Server) Open(l int) *Client {
 	c := NewClient(l)
 	c.Attach(s)
@@ -243,9 +244,9 @@ func execCb(ri *RetInfo) {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
 				l := runtime.Stack(buf, false)
-				log.Error("%v: %s", r, buf[:l])
+				log.Error(context.Background(), "%v: %s", r, buf[:l])
 			} else {
-				log.Error("%v", r)
+				log.Error(context.Background(), "%v", r)
 			}
 		}
 	}()

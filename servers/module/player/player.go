@@ -1,7 +1,7 @@
 package player
 
 import (
-	"github.com/phuhao00/shine/network"
+	network2 "github.com/phuhao00/shine/pkg/network"
 )
 
 type Player struct {
@@ -30,22 +30,22 @@ type Player struct {
 	// LastLoadTime
 	LastLoadTime uint32
 	// LastLogoutTime
-	conn *network.TCPConn
+	conn *network2.TCPConn
 }
 
 func NewPlayer() *Player {
 	return &Player{}
 }
 
-func NewPlayerWithConn(conn *network.TCPConn) network.Agent {
+func NewPlayerWithConn(conn *network2.TCPConn) network2.Agent {
 	return &Player{conn: conn}
 }
 
-func (p *Player) SetConn(conn *network.TCPConn) {
+func (p *Player) SetConn(conn *network2.TCPConn) {
 	p.conn = conn
 }
 
-func (p *Player) GetConn() *network.TCPConn {
+func (p *Player) GetConn() *network2.TCPConn {
 	return p.conn
 }
 
